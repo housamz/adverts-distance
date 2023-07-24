@@ -1,29 +1,32 @@
-.loading,
-.close,
-.far,
-.medium,
-.not-found {
-  color: white !important;
-  padding: .2rem .5rem;
-}
-
-.found.medium {
-  background-color: orange;
-  color: black !important;
-}
-
-.found.close {
-  background-color: green;
-}
-
-.found.far {
-  background-color: red;
-}
-
-.not-found, .loading {
+.loading {
   background-color: #007bff;
 }
 
 .sr-grid-cell {
-height: auto !important;
+  height: auto !important;
+}
+
+.distance {
+  background: rgb(0, 255, 0);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 0, 1) 0%,
+    rgba(255, 221, 0, 1) 50%,
+    rgba(255, 0, 0, 1) 100%
+  );
+  color: black !important;
+  margin-top: 1rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.2rem;
+  font-weight: bold;
+  position: relative;
+  height: 1.5rem;
+}
+
+.distance span::before {
+  content: '↑ ';
+}
+
+.distance span {
+  position: absolute;
 }

@@ -23,8 +23,10 @@ function getDistanceBetweenTwoPoints(cord1, cord2) {
 // function to create a loading div
 function createDiv(className = "loading", text = "Loading...") {
   const div = document.createElement("div");
+  const span = document.createElement("span");
   div.className = className;
-  div.innerHTML = text;
+  span.innerHTML = text;
+  div.appendChild(span);
   return div;
 }
 
@@ -87,11 +89,10 @@ function getCoordinates() {
             lon: areasData[j].lng
           };
           const distance = getDistanceBetweenTwoPoints(cord1, cord2).toFixed(2);
-          const colourIndicator =
-            distance <= 20 ? "close" :
-              distance <= 50 ? "medium" : "far";
           locations[i].removeChild(locations[i].lastChild);
-          locations[i].appendChild(createDiv(`found ${colourIndicator}`, distance + " km"));
+          const newDiv = createDiv(`distance`, distance + " km");
+          locations[i].appendChild(newDiv);
+          newDiv.querySelector("span").style.left = distance / 2 + "px";
           break;
         }
       }
