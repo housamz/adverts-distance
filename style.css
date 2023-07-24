@@ -1,0 +1,23 @@
+.loading,
+.found,
+.not-found {
+  color: white !important;
+  padding: .2rem .5rem;
+}
+
+.loading, .found.medium {
+  background-color: orange;
+  color: black !important;
+}
+
+.found.close {
+  background-color: green;
+}
+
+.not-found, .found.far {
+  background-color: red;
+}
+
+.sr-grid-cell {
+height: auto !important;
+}
