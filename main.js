@@ -58,8 +58,6 @@ function getCoordinates() {
 
   let mainDiv = document.querySelector("#recent-ads");
   let page = "home";
-
-  console.log(window.location.pathname.split("/")[1]);
   switch (window.location.pathname.split("/")[1]) {
     case "member":
       mainDiv = document.querySelector("#watchlist_search_results");
