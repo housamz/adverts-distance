@@ -1,24 +1,22 @@
+// Pre-calculate constants for distance calculation
+const DEG_TO_RAD = Math.PI / 180;
+
 function getDistanceBetweenTwoPoints(cord1, cord2) {
-  if (cord1.lat == cord2.lat && cord1.lon == cord2.lon) {
+  if (cord1.lat === cord2.lat && cord1.lon === cord2.lon) {
     return 0;
   }
-  const radLat1 = (Math.PI * cord1.lat) / 180;
-  const radLat2 = (Math.PI * cord2.lat) / 180;
-  const theta = cord1.lon - cord2.lon;
-  const radTheta = (Math.PI * theta) / 180;
+
+  const radLat1 = DEG_TO_RAD * cord1.lat;
+  const radLat2 = DEG_TO_RAD * cord2.lat;
+  const deltaLon = DEG_TO_RAD * (cord1.lon - cord2.lon);
 
   let dist =
     Math.sin(radLat1) * Math.sin(radLat2) +
-    Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+    Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(deltaLon);
 
-  if (dist > 1) {
-    dist = 1;
-  }
-
-  dist = Math.acos(dist);
+  dist = Math.acos(Math.min(dist, 1));
   dist = (dist * 180) / Math.PI;
-  dist = dist * 60 * 1.1515;
-  dist = dist * 1.609344; // convert miles to km
+  dist *= 60 * 1.1515 * 1.609344; // Convert miles to km
   return dist;
 }
 
@@ -28,6 +26,21 @@ function createDiv(className = "loading", text = "Loading...") {
   div.className = className;
   div.innerHTML = text;
   return div;
+}
+
+function handleSearchText(data, where) {
+  data = data.trim();
+  let output = '';
+  switch (where) {
+    case "home":
+      // split at the second comma
+      output = data.match(/[^,]+,[^,]+/g)[0];
+      break;
+    default:
+      output = data;
+      break;
+  }
+  return output;
 }
 
 // function to get the text from the divs with className location,
@@ -43,36 +56,53 @@ function getCoordinates() {
     cord1.lon = position.coords.longitude;
   });
 
-  const searchContentDiv = document.getElementById("search_content");
+  let mainDiv = document.querySelector("#recent-ads");
+  let page = "home";
 
-  const locations = searchContentDiv.querySelectorAll(".location");
-  for (let i = 0; i < locations.length; i++) {
-    const location = locations[i].innerText;
-    locations[i].appendChild(createDiv());
-    for (let j = 0; j < allCities.length; j++) {
-      if (allCities[j].name === location) {
-        const cord2 = {
-          lat: allCities[j].lat,
-          lon: allCities[j].lng
-        };
-        const distance = getDistanceBetweenTwoPoints(cord1, cord2).toFixed(2);
-        const colourIndicator =
-          distance <= 20 ? "close" :
-            distance <= 50 ? "medium" : "far";
-        locations[i].removeChild(locations[i].lastChild);
-        locations[i].appendChild(createDiv(`found ${colourIndicator}`, distance + " km"));
+  console.log(window.location.pathname.split("/")[1]);
+  switch (window.location.pathname.split("/")[1]) {
+    case "member":
+      mainDiv = document.querySelector("#watchlist_search_results");
+      page = "home";
+      break;
+    case "for-sale":
+      mainDiv = document.querySelector("#search_content");
+      page = "for-sale";
+      break;
+    default:
+      mainDiv = document.querySelector("#recent-ads");
+      page = "home";
+      break;
+  }
+  const locations = mainDiv.querySelectorAll(".location");
+
+  if (locations.length) {
+    for (let i = 0; i < locations.length; i++) {
+      const location = locations[i].innerText;
+      locations[i].appendChild(createDiv());
+      for (let j = 0; j < areasData.length; j++) {
+        if (areasData[j].name === handleSearchText(location, page)) {
+          const cord2 = {
+            lat: areasData[j].lat,
+            lon: areasData[j].lng
+          };
+          const distance = getDistanceBetweenTwoPoints(cord1, cord2).toFixed(2);
+          const colourIndicator =
+            distance <= 20 ? "close" :
+              distance <= 50 ? "medium" : "far";
+          locations[i].removeChild(locations[i].lastChild);
+          locations[i].appendChild(createDiv(`found ${colourIndicator}`, distance + " km"));
+          break;
+        }
       }
     }
-  }
-  const allLoading = searchContentDiv.querySelectorAll(".loading");
-  for (let i = 0; i < allLoading.length; i++) {
-    const span = allLoading[i];
-    span.innerHTML = "Not found";
-    span.className = "not-found";
+    const allLoading = mainDiv.querySelectorAll(".loading");
+    for (let i = 0; i < allLoading.length; i++) {
+      const span = allLoading[i];
+      span.innerHTML = "Not found";
+      span.className = "not-found";
+    }
   }
 }
-
-
-
 
 getCoordinates();

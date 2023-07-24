@@ -1,11 +1,13 @@
 .loading,
-.found,
+.close,
+.far,
+.medium,
 .not-found {
   color: white !important;
   padding: .2rem .5rem;
 }
 
-.loading, .found.medium {
+.found.medium {
   background-color: orange;
   color: black !important;
 }
@@ -14,8 +16,12 @@
   background-color: green;
 }
 
-.not-found, .found.far {
+.found.far {
   background-color: red;
+}
+
+.not-found, .loading {
+  background-color: #007bff;
 }
 
 .sr-grid-cell {
